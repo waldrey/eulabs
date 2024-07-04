@@ -1,0 +1,39 @@
+version: '3.8'
+
+name: eulabs-containers
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_DATABASE: "${DB_NAME}"
+    ports:
+      - "3306:3306"
+    volumes:
+      - eulabs_database:/var/lib/mysql
+    networks:
+      - eulabs-network
+
+  app:
+    build: .
+    restart: unless-stopped
+    container_name: webserver
+    working_dir: /application
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - eulabs-network
+
+
+networks:
+  eulabs-network:
+    driver: bridge
+
+volumes:
+  eulabs_database:
