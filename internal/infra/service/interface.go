@@ -6,6 +6,7 @@ import (
 )
 
 type ProductInterface interface {
+	Create(product dto.CreateProductRequest) error
 	FindAll() ([]entity.Product, error)
 	FindOne(id int) (*entity.Product, error)
 	Update(id int, product dto.PutProductRequest) (*entity.Product, error)
