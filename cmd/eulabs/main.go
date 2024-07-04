@@ -21,6 +21,8 @@ func main() {
 		return
 	}
 
+	configs.ConnectDatabase()
+
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, "hello world")
