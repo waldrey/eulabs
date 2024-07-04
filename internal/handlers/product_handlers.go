@@ -52,6 +52,36 @@ func (h *ProductHandler) List(c echo.Context) error {
 	return c.JSON(http.StatusOK, products)
 }
 
+// Get Product godoc
+// @Summary      Get Product
+// @Description  Get product by id
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Success      200       {array}   entity.Product
+// @Router       /api/v1/products.:id [get]
+func (h *ProductHandler) FindOne(c echo.Context) error {
+	log.Print("GET :id request initialization")
+
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be an integer"})
+	}
+
+	if id <= 0 {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be a positive integer"})
+	}
+
+	product, err := h.Service.FindOne(id)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+	}
+
+	log.Print("GET :id request finished")
+	return c.JSON(http.StatusOK, product)
+}
+
 // Delete Product godoc
 // @Summary      Delete product
 // @Description  Deletes the product from the system
@@ -61,7 +91,7 @@ func (h *ProductHandler) List(c echo.Context) error {
 // @Success      204	[]
 // @Router       /api/v1/products/:id [delete]
 func (h *ProductHandler) Delete(c echo.Context) error {
-	log.Print("DELETE request initialization")
+	log.Print("DELETE :id  request initialization")
 
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -83,6 +113,6 @@ func (h *ProductHandler) Delete(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
 	}
 
-	log.Print("DELETE request finished")
+	log.Print("DELETE :id request finished")
 	return c.JSON(http.StatusNoContent, "")
 }
