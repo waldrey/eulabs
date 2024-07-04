@@ -16,6 +16,7 @@ import (
 	_ "github.com/waldrey/eulabs/docs"
 	"github.com/waldrey/eulabs/internal/handlers"
 	"github.com/waldrey/eulabs/internal/infra/database"
+	"github.com/waldrey/eulabs/internal/infra/service"
 	_ "github.com/waldrey/eulabs/pkg/logger"
 )
 
@@ -46,7 +47,8 @@ func main() {
 
 	// Handler Product
 	productRepository := database.ProductRepository(db)
-	productHandler := handlers.NewProductHandler(productRepository)
+	productService := service.ProductService(productRepository)
+	productHandler := handlers.NewProductHandler(productService)
 
 	productRoutes := api.Group("products")
 	productRoutes.GET("", productHandler.List)

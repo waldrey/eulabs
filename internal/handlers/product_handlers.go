@@ -6,12 +6,12 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	"github.com/waldrey/eulabs/internal/infra/database"
+	"github.com/waldrey/eulabs/internal/infra/service"
 	"gorm.io/gorm"
 )
 
 type ProductDTO struct {
-	ID          int     `gorm:"primaryKey" json:"id"`
+	ID          int     `json:"id"`
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
@@ -19,14 +19,14 @@ type ProductDTO struct {
 }
 
 type ProductHandler struct {
-	Repository database.ProductInterface
-	Validator  *validator.Validate
+	Service   service.ProductInterface
+	Validator *validator.Validate
 }
 
-func NewProductHandler(repository database.ProductInterface) *ProductHandler {
+func NewProductHandler(service service.ProductInterface) *ProductHandler {
 	return &ProductHandler{
-		Repository: repository,
-		Validator:  validator.New(),
+		Service:   service,
+		Validator: validator.New(),
 	}
 }
 
@@ -41,7 +41,7 @@ func NewProductHandler(repository database.ProductInterface) *ProductHandler {
 func (h *ProductHandler) List(c echo.Context) error {
 	log.Print("GET request initialization")
 
-	products, err := h.Repository.FindAll()
+	products, err := h.Service.FindAll()
 	if err != nil {
 		log.Print("Unknown error getting products in database")
 		return c.JSON(http.StatusInternalServerError, "Internal Server Error")
