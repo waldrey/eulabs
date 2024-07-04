@@ -3,6 +3,7 @@ package service
 import (
 	"log"
 
+	"github.com/waldrey/eulabs/internal/dto"
 	"github.com/waldrey/eulabs/internal/entity"
 	"github.com/waldrey/eulabs/internal/infra/database"
 )
@@ -31,4 +32,37 @@ func (p *Product) Delete(id int) error {
 
 	log.Print("record found to deletion")
 	return p.repository.Delete(product)
+}
+
+func (p *Product) Update(id int, productFields dto.PutProductRequest) (*entity.Product, error) {
+	product, err := p.repository.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if productFields.Name != "" {
+		product.Name = productFields.Name
+	}
+
+	if productFields.Description != "" {
+		product.Description = productFields.Description
+	}
+
+	if productFields.Price >= 0.0 {
+		product.Price = productFields.Price
+	}
+
+	log.Print("record found to update")
+	err = p.repository.Update(product)
+	if err != nil {
+		return nil, err
+	}
+
+	product, err = p.repository.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Print("product updated with success")
+	return product, nil
 }

@@ -4,8 +4,6 @@ definitions:
     properties:
       description:
         type: string
-      id:
-        type: integer
       name:
         type: string
       price:
@@ -37,6 +35,67 @@ paths:
               $ref: '#/definitions/entity.Product'
             type: array
       summary: List products
+      tags:
+      - products
+  /api/v1/products/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the product from the system
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete product
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Get product by id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Product'
+            type: array
+      summary: Get Product
+      tags:
+      - products
+    patch:
+      consumes:
+      - application/json
+      description: Update product
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Product'
+            type: array
+      summary: Update product
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Update product
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Product'
+            type: array
+      summary: Update product
       tags:
       - products
 swagger: "2.0"
