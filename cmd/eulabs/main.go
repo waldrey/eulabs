@@ -10,7 +10,10 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/waldrey/eulabs/configs"
+	"github.com/waldrey/eulabs/internal/handlers"
+	"github.com/waldrey/eulabs/internal/infra/database"
 	_ "github.com/waldrey/eulabs/pkg/logger"
 )
 
@@ -20,13 +23,19 @@ func main() {
 		log.Printf("failed load config: %v\n", err)
 		return
 	}
-
-	configs.ConnectDatabase()
+	db := configs.ConnectDatabase()
 
 	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, "hello world")
-	})
+	e.Use(middleware.Recover())
+
+	api := e.Group("api/v1/")
+
+	// Handler Product
+	productRepository := database.ProductRepository(db)
+	productHandler := handlers.NewProductHandler(productRepository)
+
+	productRoutes := api.Group("products")
+	productRoutes.GET("", productHandler.List)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
