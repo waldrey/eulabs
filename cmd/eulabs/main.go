@@ -10,23 +10,48 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"github.com/waldrey/eulabs/configs"
+	_ "github.com/waldrey/eulabs/docs"
+	"github.com/waldrey/eulabs/internal/handlers"
+	"github.com/waldrey/eulabs/internal/infra/database"
+	"github.com/waldrey/eulabs/internal/infra/service"
 	_ "github.com/waldrey/eulabs/pkg/logger"
 )
 
+// @title           Eulabs Products API
+// @version         1.0
+// @description     This is a sample server celler server.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   Waldrey Souza Silva
+// @contact.url    http://waldrey.com/
+// @contact.email  waldrey22@gmail.com
+
+// @host      localhost:8080
+// @BasePath  /api/v1
 func main() {
 	config, err := configs.LoadConfig()
 	if err != nil {
 		log.Printf("failed load config: %v\n", err)
 		return
 	}
-
-	configs.ConnectDatabase()
+	db := configs.ConnectDatabase()
 
 	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, "hello world")
-	})
+	e.Use(middleware.Recover())
+
+	e.GET("/docs/*", echoSwagger.WrapHandler)
+	api := e.Group("api/v1/")
+
+	// Handler Product
+	productRepository := database.ProductRepository(db)
+	productService := service.ProductService(productRepository)
+	productHandler := handlers.NewProductHandler(productService)
+
+	productRoutes := api.Group("products")
+	productRoutes.GET("", productHandler.List)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()

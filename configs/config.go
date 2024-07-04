@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/spf13/viper"
+	"github.com/waldrey/eulabs/internal/entity"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -38,13 +39,25 @@ func LoadConfig() (*conf, error) {
 	return cfg, err
 }
 
-func ConnectDatabase() {
+func ConnectDatabase() *gorm.DB {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
-	_, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed connect database: %v\n", err)
 		panic(err)
 	}
 
 	log.Print("connected database with success")
+
+	err = migrateDatabase(db)
+	if err != nil {
+		log.Fatalf("failed auto migrate database: %v\n", err)
+		panic(err)
+	}
+
+	return db
+}
+
+func migrateDatabase(db *gorm.DB) error {
+	return db.AutoMigrate(&entity.Product{})
 }
