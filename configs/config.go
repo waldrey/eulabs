@@ -1,8 +1,15 @@
 package configs
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/spf13/viper"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
+
+var cfg *conf
 
 type conf struct {
 	DBDriver      string `mapstructure:"DB_DRIVER"`
@@ -15,7 +22,7 @@ type conf struct {
 }
 
 func LoadConfig() (*conf, error) {
-	var cfg *conf
+
 	viper.SetConfigName("app_config")
 	viper.SetConfigType("env")
 	viper.SetConfigFile(".env")
@@ -29,4 +36,15 @@ func LoadConfig() (*conf, error) {
 		panic(err)
 	}
 	return cfg, err
+}
+
+func ConnectDatabase() {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
+	_, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("failed connect database: %v\n", err)
+		panic(err)
+	}
+
+	log.Print("connected database with success")
 }
