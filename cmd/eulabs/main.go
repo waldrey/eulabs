@@ -52,6 +52,7 @@ func main() {
 
 	productRoutes := api.Group("products")
 	productRoutes.GET("", productHandler.List)
+	productRoutes.DELETE("/:id", productHandler.Delete)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()

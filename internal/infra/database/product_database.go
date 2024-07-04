@@ -23,3 +23,14 @@ func (p *Product) FindAll() ([]entity.Product, error) {
 
 	return products, err
 }
+
+func (p *Product) Delete(product *entity.Product) error {
+	err := p.DB.Delete(product).Error
+	return err
+}
+
+func (p *Product) FindByID(id int) (*entity.Product, error) {
+	var product entity.Product
+	err := p.DB.First(&product, "id = ?", id).Error
+	return &product, err
+}
