@@ -8,7 +8,6 @@ import (
 
 func TestGivenAnEmptyPrice_WhenCreateANewProduct_ThenShouldReceiveAnError(t *testing.T) {
 	product := Product{
-		ID:          12345,
 		Name:        "Macbook Pro",
 		Description: "O poderoso computador da Apple",
 	}
@@ -17,16 +16,13 @@ func TestGivenAnEmptyPrice_WhenCreateANewProduct_ThenShouldReceiveAnError(t *tes
 
 func TestGivenAnEmptyName_WhenCreateANewProduct_ThenShouldReceiveAnError(t *testing.T) {
 	product := Product{
-		ID:          12345,
 		Description: "O poderoso computador da Apple",
 	}
 	assert.Error(t, product.IsValid(), "invalid name")
 }
 
 func TestGivenAnEmptyDescription_WhenCreateANewProduct_ThenShouldReceiveAnError(t *testing.T) {
-	product := Product{
-		ID: 12345,
-	}
+	product := Product{}
 	assert.Error(t, product.IsValid(), "invalid description")
 }
 
@@ -42,7 +38,6 @@ func TestGivenAnEmptyName_WhenICallNewProductFunc_ThenShouldReceiveAnError(t *te
 
 func TestGivenAValidParams_WhenICallNewProduct_ThenShouldReceiveCreateProductWithAllParams(t *testing.T) {
 	product := Product{
-		ID:          1234,
 		Name:        "Macbook Pro",
 		Description: "O poderoso computador da Apple",
 		Price:       23000.00,

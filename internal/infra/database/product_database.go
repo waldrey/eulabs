@@ -24,6 +24,15 @@ func (p *Product) FindAll() ([]entity.Product, error) {
 	return products, err
 }
 
+func (p *Product) Update(product *entity.Product) error {
+	err := p.DB.Save(product).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (p *Product) Delete(product *entity.Product) error {
 	err := p.DB.Delete(product).Error
 	return err
