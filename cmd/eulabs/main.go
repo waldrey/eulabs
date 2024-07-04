@@ -11,12 +11,25 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"github.com/waldrey/eulabs/configs"
+	_ "github.com/waldrey/eulabs/docs"
 	"github.com/waldrey/eulabs/internal/handlers"
 	"github.com/waldrey/eulabs/internal/infra/database"
 	_ "github.com/waldrey/eulabs/pkg/logger"
 )
 
+// @title           Eulabs Products API
+// @version         1.0
+// @description     This is a sample server celler server.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   Waldrey Souza Silva
+// @contact.url    http://waldrey.com/
+// @contact.email  waldrey22@gmail.com
+
+// @host      localhost:8080
+// @BasePath  /api/v1
 func main() {
 	config, err := configs.LoadConfig()
 	if err != nil {
@@ -28,6 +41,7 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Recover())
 
+	e.GET("/docs/*", echoSwagger.WrapHandler)
 	api := e.Group("api/v1/")
 
 	// Handler Product

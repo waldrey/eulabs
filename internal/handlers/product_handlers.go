@@ -30,6 +30,14 @@ func NewProductHandler(repository database.ProductInterface) *ProductHandler {
 	}
 }
 
+// List Products godoc
+// @Summary      List products
+// @Description  Get all products
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Success      200       {array}   entity.Product
+// @Router       /api/v1/products [get]
 func (h *ProductHandler) List(c echo.Context) error {
 	log.Print("GET request initialization")
 
