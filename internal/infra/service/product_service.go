@@ -19,6 +19,10 @@ func (p *Product) FindAll() ([]entity.Product, error) {
 	return p.repository.FindAll()
 }
 
+func (p *Product) FindOne(id int) (*entity.Product, error) {
+	return p.repository.FindByID(id)
+}
+
 func (p *Product) Delete(id int) error {
 	product, err := p.repository.FindByID(id)
 	if err != nil {
