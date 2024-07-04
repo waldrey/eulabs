@@ -40,9 +40,17 @@ func (p *Product) Update(id int, productFields dto.PutProductRequest) (*entity.P
 		return nil, err
 	}
 
-	product.Name = productFields.Name
-	product.Description = productFields.Description
-	product.Price = productFields.Price
+	if productFields.Name != "" {
+		product.Name = productFields.Name
+	}
+
+	if productFields.Description != "" {
+		product.Description = productFields.Description
+	}
+
+	if productFields.Price >= 0.0 {
+		product.Price = productFields.Price
+	}
 
 	log.Print("record found to update")
 	err = p.repository.Update(product)

@@ -12,11 +12,11 @@ type PutProductRequest struct {
 	Price       float64 `json:"price" validate:"required,gt=0"`
 }
 
-// type UpdateProductRequest struct {
-// 	Name        *string  `json:"name"`
-// 	Description *string  `json:"description"`
-// 	Price       *float64 `json:"price"`
-// }
+type UpdateProductRequest struct {
+	Name        *string  `json:"name"`
+	Description *string  `json:"description"`
+	Price       *float64 `json:"price"`
+}
 
 type ProductResponse struct {
 	Id          int     `json:"id"`

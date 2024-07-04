@@ -32,3 +32,17 @@ func FormatValidationError(err error) []string {
 
 	return errors
 }
+
+func SafeDereferenceString(ptr *string) string {
+	if ptr == nil {
+		return ""
+	}
+	return *ptr
+}
+
+func SafeDereferenceFloat64(ptr *float64) float64 {
+	if ptr == nil {
+		return 0.0
+	}
+	return *ptr
+}

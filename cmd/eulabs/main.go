@@ -55,7 +55,7 @@ func main() {
 	productRoutes.GET("/:id", productHandler.FindOne)
 	productRoutes.DELETE("/:id", productHandler.Delete)
 	productRoutes.PUT("/:id", productHandler.UpdatePut)
-	//productRoutes.PATCH("/:id", productHandler.UpdatePatch)
+	productRoutes.PATCH("/:id", productHandler.UpdatePatch)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()

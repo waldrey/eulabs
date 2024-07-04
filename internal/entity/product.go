@@ -13,10 +13,10 @@ var (
 )
 
 type Product struct {
+	gorm.Model  `swaggerignore:"true"`
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
-	gorm.Model
 }
 
 func NewProduct(name string, description string, price float64) (*Product, error) {
