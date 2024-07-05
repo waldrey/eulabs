@@ -22,7 +22,9 @@ help: # Show all commands available to execution
 install: # Install eulabs application
 	docker-compose up -d --build
 	@echo "\033[1;34mContainers installed with success, follow the steps below to finish!\033[00m"
-	go run ./cmd/eulabs/main.go
+	@echo "\tIf you want to run the project without Docker, just run the command below:"
+	@echo "\tmake run"
+	@echo "\tIf running without docker change DB_HOST to \033[1;34m'localhost'\033[00m your env"
 
 .PHONY: run
 run: # Command to locally run application 
