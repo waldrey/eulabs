@@ -8,17 +8,20 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	"github.com/waldrey/eulabs/pkg/requests"
 )
 
 func ValidateRequest(c echo.Context) (int, error) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		return 0, c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be an integer"})
+		errResponse := requests.ErrorResponse("ID must be an integer")
+		return 0, c.JSON(http.StatusBadRequest, errResponse)
 	}
 
 	if id <= 0 {
-		return 0, c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be a positive integer"})
+		errResponse := requests.ErrorResponse("ID must be a positive integer")
+		return 0, c.JSON(http.StatusBadRequest, errResponse)
 	}
 
 	return id, nil

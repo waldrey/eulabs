@@ -3,12 +3,12 @@ package handlers
 import (
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/waldrey/eulabs/internal/dto"
 	"github.com/waldrey/eulabs/internal/infra/service"
+	"github.com/waldrey/eulabs/pkg/requests"
 	"github.com/waldrey/eulabs/tools"
 )
 
@@ -27,11 +27,14 @@ func NewProductHandler(service service.ProductInterface) *ProductHandler {
 // Create Product godoc
 // @Summary      Create Product
 // @Description  Create product
-// @Tags         products
+// @Tags         Products
 // @Accept       json
 // @Produce      json
-// @Success      201       {array}   entity.Product
-// @Router       /api/v1/products/:id [post]
+// @Success      201       {array}   requests.TypeSuccessResponse
+// @Failure 	 400 	   {object}  requests.TypeErrorResponse
+// @Failure 	 422 	   {object}  requests.TypeErrorResponse
+// @Failure 	 500 	   {object}  requests.TypeErrorResponse
+// @Router       /api/v1/products [post]
 func (h *ProductHandler) Create(c echo.Context) error {
 	log.Print("POST request initialization")
 
@@ -48,85 +51,90 @@ func (h *ProductHandler) Create(c echo.Context) error {
 		})
 	}
 
-	err := h.Service.Create(product)
+	entityProduct, err := h.Service.Create(product)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
+		errResponse := requests.ErrorResponse("Internal Server Error")
+		return c.JSON(http.StatusInternalServerError, errResponse)
 	}
 
 	log.Print("POST request finished")
-	return c.JSON(http.StatusCreated, product)
+	successResponse := requests.SuccessResponse(*entityProduct)
+	return c.JSON(http.StatusCreated, successResponse)
 }
 
 // List Products godoc
 // @Summary      List products
 // @Description  Get all products
-// @Tags         products
+// @Tags         Products
 // @Accept       json
 // @Produce      json
-// @Success      200       {array}   entity.Product
-// @Router       /api/v1/products [get]
+// @Success      200       {array}   requests.TypeSuccessResponse
+// @Failure 	 500 	   {object}  requests.TypeErrorResponse
+// @Router       /products [get]
 func (h *ProductHandler) List(c echo.Context) error {
 	log.Print("GET request initialization")
 
 	products, err := h.Service.FindAll()
 	if err != nil {
 		log.Print("Unknown error getting products in database")
-		return c.JSON(http.StatusInternalServerError, "Internal Server Error")
+		errResponse := requests.ErrorResponse("Internal Server Error")
+		return c.JSON(http.StatusInternalServerError, errResponse)
 	}
 
 	log.Print("GET request finished")
-	return c.JSON(http.StatusOK, products)
+	successResponse := requests.SuccessListResponse(products)
+	return c.JSON(http.StatusOK, successResponse)
 }
 
 // Get Product godoc
 // @Summary      Get Product
 // @Description  Get product by id
-// @Tags         products
+// @Tags         Products
 // @Accept       json
 // @Produce      json
-// @Success      200       {array}   entity.Product
-// @Router       /api/v1/products/:id [get]
+// @Param        id   path      string  true  "product ID" Format(int)
+// @Success      200       {array}   requests.TypeSuccessResponse
+// @Failure      400       {object}  requests.TypeErrorResponse
+// @Failure 	 404 	   {object}  requests.TypeErrorResponse
+// @Failure      500       {object}  requests.TypeErrorResponse
+// @Router       /products/{id} [get]
 func (h *ProductHandler) FindOne(c echo.Context) error {
 	log.Print("GET :id request initialization")
 
-	idParam := c.Param("id")
-	id, err := strconv.Atoi(idParam)
+	id, err := tools.ValidateRequest(c)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be an integer"})
-	}
-
-	if id <= 0 {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be a positive integer"})
+		return err
 	}
 
 	product, err := h.Service.FindOne(id)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+		errResponse := requests.ErrorResponse("Product not found")
+		return c.JSON(http.StatusNotFound, errResponse)
 	}
 
 	log.Print("GET :id request finished")
-	return c.JSON(http.StatusOK, product)
+	successResponse := requests.SuccessResponse(*product)
+	return c.JSON(http.StatusOK, successResponse)
 }
 
 // Delete Product godoc
 // @Summary      Delete product
 // @Description  Deletes the product from the system
-// @Tags         products
+// @Tags         Products
 // @Accept       json
 // @Produce      json
+// @Param        id   path      string  true  "product ID" Format(int)
 // @Success      204
-// @Router       /api/v1/products/:id [delete]
+// @Failure      400       {object}  requests.TypeErrorResponse
+// @Failure      404       {object}  requests.TypeErrorResponse
+// @Failure      500       {object}  requests.TypeErrorResponse
+// @Router       /products/{id} [delete]
 func (h *ProductHandler) Delete(c echo.Context) error {
 	log.Print("DELETE :id  request initialization")
 
-	idParam := c.Param("id")
-	id, err := strconv.Atoi(idParam)
+	id, err := tools.ValidateRequest(c)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be an integer"})
-	}
-
-	if id <= 0 {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be a positive integer"})
+		return err
 	}
 
 	err = h.Service.Delete(id)
@@ -134,9 +142,11 @@ func (h *ProductHandler) Delete(c echo.Context) error {
 		log.Print("Unknown error deleting products in database")
 
 		if err.Error() == "record not found" {
-			return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+			errResponse := requests.ErrorResponse("Product not found")
+			return c.JSON(http.StatusNotFound, errResponse)
 		}
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
+		errResponse := requests.ErrorResponse("Internal Server Error")
+		return c.JSON(http.StatusInternalServerError, errResponse)
 	}
 
 	log.Print("DELETE :id request finished")
@@ -146,11 +156,17 @@ func (h *ProductHandler) Delete(c echo.Context) error {
 // Update Product godoc
 // @Summary      Update product
 // @Description  Update product
-// @Tags         products
+// @Tags         Products
 // @Accept       json
 // @Produce      json
-// @Success      200       {array}   entity.Product
-// @Router       /api/v1/products/:id [put]
+// @Param        id   path      string  true  "product ID" Format(int)
+// @Param        request     body      dto.PutProductRequest  true  "product request"
+// @Success      200       {array}   requests.TypeSuccessResponse
+// @Failure      400       {object}  requests.TypeErrorResponse
+// @Failure      404       {object}  requests.TypeErrorResponse
+// @Failure      422       {object}  requests.TypeErrorResponse
+// @Failure      500       {object}  requests.TypeErrorResponse
+// @Router       /products/{id} [put]
 func (h *ProductHandler) UpdatePut(c echo.Context) error {
 	log.Print("PUT :id  request initialization")
 
@@ -172,7 +188,8 @@ func (h *ProductHandler) UpdatePut(c echo.Context) error {
 
 	_, err = h.Service.FindOne(id)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+		errResponse := requests.ErrorResponse("Product not found")
+		return c.JSON(http.StatusNotFound, errResponse)
 	}
 
 	_, err = h.Service.Update(id, product)
@@ -180,28 +197,37 @@ func (h *ProductHandler) UpdatePut(c echo.Context) error {
 		log.Print("Unknown error deleting products in database")
 
 		if err.Error() == "record not found" {
-			return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+			errResponse := requests.ErrorResponse("Product not found")
+			return c.JSON(http.StatusNotFound, errResponse)
 		}
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
+		errResponse := requests.ErrorResponse("Internal Server Error")
+		return c.JSON(http.StatusInternalServerError, errResponse)
 	}
 
 	productUpdated, err := h.Service.FindOne(id)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+		errResponse := requests.ErrorResponse("Product not found")
+		return c.JSON(http.StatusNotFound, errResponse)
 	}
 
 	log.Print("PUT :id request finished")
-	return c.JSON(http.StatusOK, productUpdated)
+	successResponse := requests.SuccessResponse(*productUpdated)
+	return c.JSON(http.StatusOK, successResponse)
 }
 
 // Update Product godoc
 // @Summary      Update product
 // @Description  Update product
-// @Tags         products
+// @Tags         Products
 // @Accept       json
 // @Produce      json
-// @Success      200       {array}   entity.Product
-// @Router       /api/v1/products/:id [patch]
+// @Param        id   path      string  true  "product ID" Format(int)
+// @Param        request     body      dto.UpdateProductRequest  true  "product request"
+// @Success      200       {array}   requests.TypeSuccessResponse
+// @Failure      422       {object}  requests.TypeErrorResponse
+// @Failure      404       {object}  requests.TypeErrorResponse
+// @Failure      500       {object}  requests.TypeErrorResponse
+// @Router       /products/{id} [patch]
 func (h *ProductHandler) UpdatePatch(c echo.Context) error {
 	log.Print("PATCH :id  request initialization")
 
@@ -223,7 +249,8 @@ func (h *ProductHandler) UpdatePatch(c echo.Context) error {
 
 	_, err = h.Service.FindOne(id)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+		errResponse := requests.ErrorResponse("Product not found")
+		return c.JSON(http.StatusNotFound, errResponse)
 	}
 
 	_, err = h.Service.Update(id, dto.PutProductRequest{
@@ -235,16 +262,20 @@ func (h *ProductHandler) UpdatePatch(c echo.Context) error {
 		log.Print("Unknown error deleting products in database")
 
 		if err.Error() == "record not found" {
-			return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+			errResponse := requests.ErrorResponse("Product not found")
+			return c.JSON(http.StatusNotFound, errResponse)
 		}
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
+		errResponse := requests.ErrorResponse("Internal Server Error")
+		return c.JSON(http.StatusInternalServerError, errResponse)
 	}
 
 	productUpdated, err := h.Service.FindOne(id)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Product not found"})
+		errResponse := requests.ErrorResponse("Product not found")
+		return c.JSON(http.StatusNotFound, errResponse)
 	}
 
 	log.Print("PUT :id request finished")
-	return c.JSON(http.StatusOK, productUpdated)
+	successResponse := requests.SuccessResponse(*productUpdated)
+	return c.JSON(http.StatusOK, successResponse)
 }

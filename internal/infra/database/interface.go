@@ -5,7 +5,7 @@ import (
 )
 
 type ProductInterface interface {
-	Create(product *entity.Product) error
+	Create(product *entity.Product) (*entity.Product, error)
 	FindAll() ([]entity.Product, error)
 	FindByID(id int) (*entity.Product, error)
 	Update(product *entity.Product) error

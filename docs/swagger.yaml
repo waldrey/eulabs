@@ -1,6 +1,19 @@
 basePath: /api/v1
 definitions:
-  entity.Product:
+  dto.PutProductRequest:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+    required:
+    - description
+    - name
+    - price
+    type: object
+  dto.UpdateProductRequest:
     properties:
       description:
         type: string
@@ -9,79 +22,26 @@ definitions:
       price:
         type: number
     type: object
+  requests.TypeErrorResponse:
+    properties:
+      data:
+        properties:
+          error:
+            type: string
+        type: object
+    type: object
+  requests.TypeSuccessResponse:
+    properties:
+      data: {}
+    type: object
 host: localhost:8080
 info:
-  contact:
-    email: waldrey22@gmail.com
-    name: Waldrey Souza Silva
-    url: http://waldrey.com/
-  description: This is a sample server celler server.
-  termsOfService: http://swagger.io/terms/
+  contact: {}
+  description: API de Produtos
   title: Eulabs Products API
   version: "1.0"
 paths:
   /api/v1/products:
-    get:
-      consumes:
-      - application/json
-      description: Get all products
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entity.Product'
-            type: array
-      summary: List products
-      tags:
-      - products
-  /api/v1/products/:id:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes the product from the system
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-      summary: Delete product
-      tags:
-      - products
-    get:
-      consumes:
-      - application/json
-      description: Get product by id
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entity.Product'
-            type: array
-      summary: Get Product
-      tags:
-      - products
-    patch:
-      consumes:
-      - application/json
-      description: Update product
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entity.Product'
-            type: array
-      summary: Update product
-      tags:
-      - products
     post:
       consumes:
       - application/json
@@ -93,15 +53,28 @@ paths:
           description: Created
           schema:
             items:
-              $ref: '#/definitions/entity.Product'
+              $ref: '#/definitions/requests.TypeSuccessResponse'
             type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
       summary: Create Product
       tags:
-      - products
-    put:
+      - Products
+  /products:
+    get:
       consumes:
       - application/json
-      description: Update product
+      description: Get all products
       produces:
       - application/json
       responses:
@@ -109,9 +82,166 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/entity.Product'
+              $ref: '#/definitions/requests.TypeSuccessResponse'
             type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+      summary: List products
+      tags:
+      - Products
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the product from the system
+      parameters:
+      - description: product ID
+        format: int
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+      summary: Delete product
+      tags:
+      - Products
+    get:
+      consumes:
+      - application/json
+      description: Get product by id
+      parameters:
+      - description: product ID
+        format: int
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/requests.TypeSuccessResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+      summary: Get Product
+      tags:
+      - Products
+    patch:
+      consumes:
+      - application/json
+      description: Update product
+      parameters:
+      - description: product ID
+        format: int
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: product request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/requests.TypeSuccessResponse'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
       summary: Update product
       tags:
-      - products
+      - Products
+    put:
+      consumes:
+      - application/json
+      description: Update product
+      parameters:
+      - description: product ID
+        format: int
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: product request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PutProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/requests.TypeSuccessResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/requests.TypeErrorResponse'
+      summary: Update product
+      tags:
+      - Products
 swagger: "2.0"
