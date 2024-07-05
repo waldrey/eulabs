@@ -1,9 +1,7 @@
-<p align="center">
-  <img src="https://www.lifeonline.com.br/site/site_v4/assets/img/Integra/Eulabs.png" alt="Eulabs">
-</p>
-<h1 align="center">Eulabs Hiring Challenge</h1>
+![image](https://github.com/waldrey/eulabs/assets/43473539/a708cef6-e90b-44c7-928c-b97d9b5cacd4)
+# Eulabs Hiring Challenge
 
-> Criar uma API seguindo as melhores convenções e padrões do Golang, além de aplicar design patterns e boas práticas de design de API.
+> Criar uma API (CRUD de produtos) seguindo as melhores convenções e padrões do Golang, além de aplicar design patterns e boas práticas de design de API.
 
 ## Sobre API
 
