@@ -23,6 +23,39 @@ func NewProductHandler(service service.ProductInterface) *ProductHandler {
 	}
 }
 
+// Create Product godoc
+// @Summary      Create Product
+// @Description  Create product
+// @Tags         products
+// @Accept       json
+// @Produce      json
+// @Success      201       {array}   entity.Product
+// @Router       /api/v1/products/:id [post]
+func (h *ProductHandler) Create(c echo.Context) error {
+	log.Print("POST request initialization")
+
+	var product dto.CreateProductRequest
+	if err := c.Bind(&product); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"error": tools.FormatValidationError(err),
+		})
+	}
+
+	if err := h.Validator.Struct(product); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, map[string]interface{}{
+			"error": tools.FormatValidationError(err),
+		})
+	}
+
+	err := h.Service.Create(product)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Internal Server Error"})
+	}
+
+	log.Print("POST request finished")
+	return c.JSON(http.StatusCreated, product)
+}
+
 // List Products godoc
 // @Summary      List products
 // @Description  Get all products

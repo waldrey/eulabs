@@ -82,6 +82,22 @@ paths:
       summary: Update product
       tags:
       - products
+    post:
+      consumes:
+      - application/json
+      description: Create product
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              $ref: '#/definitions/entity.Product'
+            type: array
+      summary: Create Product
+      tags:
+      - products
     put:
       consumes:
       - application/json

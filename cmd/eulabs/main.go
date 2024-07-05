@@ -51,6 +51,7 @@ func main() {
 	productHandler := handlers.NewProductHandler(productService)
 
 	productRoutes := api.Group("products")
+	productRoutes.POST("/", productHandler.Create)
 	productRoutes.GET("", productHandler.List)
 	productRoutes.GET("/:id", productHandler.FindOne)
 	productRoutes.DELETE("/:id", productHandler.Delete)
