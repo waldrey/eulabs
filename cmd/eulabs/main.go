@@ -36,6 +36,7 @@ func main() {
 
 	e := echo.New()
 	e.Use(middleware.Recover())
+	e.Pre(middleware.RemoveTrailingSlash())
 
 	e.GET("/docs/*", echoSwagger.WrapHandler)
 	api := e.Group("api/v1/")
@@ -46,7 +47,7 @@ func main() {
 	productHandler := handlers.NewProductHandler(productService)
 
 	productRoutes := api.Group("products")
-	productRoutes.POST("/", productHandler.Create)
+	productRoutes.POST("", productHandler.Create)
 	productRoutes.GET("", productHandler.List)
 	productRoutes.GET("/:id", productHandler.FindOne)
 	productRoutes.DELETE("/:id", productHandler.Delete)
