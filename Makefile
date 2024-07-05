@@ -32,6 +32,10 @@ run: # Command to locally run application
 test: # Run tests eulabs application
 	go test ./...
 
+.PHONY: swagger
+swagger: # Generate swagger documentation with swag
+	swag init -g cmd/eulabs/main.go
+
 .PHONY: clean
 clean: # Clean eulabs application (drop all containers)
 	docker-compose down
