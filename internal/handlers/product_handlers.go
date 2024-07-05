@@ -7,7 +7,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/waldrey/eulabs/internal/dto"
-	"github.com/waldrey/eulabs/internal/entity"
 	"github.com/waldrey/eulabs/internal/infra/service"
 	"github.com/waldrey/eulabs/pkg/requests"
 	"github.com/waldrey/eulabs/tools"
@@ -52,18 +51,14 @@ func (h *ProductHandler) Create(c echo.Context) error {
 		})
 	}
 
-	err := h.Service.Create(product)
+	entityProduct, err := h.Service.Create(product)
 	if err != nil {
 		errResponse := requests.ErrorResponse("Internal Server Error")
 		return c.JSON(http.StatusInternalServerError, errResponse)
 	}
 
 	log.Print("POST request finished")
-	successResponse := requests.SuccessResponse(entity.Product{
-		Name:        product.Name,
-		Description: product.Description,
-		Price:       product.Price,
-	})
+	successResponse := requests.SuccessResponse(*entityProduct)
 	return c.JSON(http.StatusCreated, successResponse)
 }
 

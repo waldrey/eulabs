@@ -13,13 +13,19 @@ func ProductRepository(db *gorm.DB) *Product {
 	return &Product{DB: db}
 }
 
-func (p *Product) Create(product *entity.Product) error {
+func (p *Product) Create(product *entity.Product) (*entity.Product, error) {
 	err := p.DB.Create(product).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	var createdProduct entity.Product
+	err = p.DB.First(&createdProduct, product.ID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &createdProduct, nil
 }
 
 func (p *Product) FindAll() ([]entity.Product, error) {

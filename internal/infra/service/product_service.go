@@ -16,7 +16,7 @@ func ProductService(repository database.ProductInterface) *Product {
 	return &Product{repository: repository}
 }
 
-func (p *Product) Create(product dto.CreateProductRequest) error {
+func (p *Product) Create(product dto.CreateProductRequest) (*entity.Product, error) {
 	productEntity := &entity.Product{
 		Name:        product.Name,
 		Description: product.Description,
