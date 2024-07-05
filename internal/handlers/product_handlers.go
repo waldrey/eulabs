@@ -3,7 +3,6 @@ package handlers
 import (
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -56,14 +55,9 @@ func (h *ProductHandler) List(c echo.Context) error {
 func (h *ProductHandler) FindOne(c echo.Context) error {
 	log.Print("GET :id request initialization")
 
-	idParam := c.Param("id")
-	id, err := strconv.Atoi(idParam)
+	id, err := tools.ValidateRequest(c)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be an integer"})
-	}
-
-	if id <= 0 {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be a positive integer"})
+		return err
 	}
 
 	product, err := h.Service.FindOne(id)
@@ -86,14 +80,9 @@ func (h *ProductHandler) FindOne(c echo.Context) error {
 func (h *ProductHandler) Delete(c echo.Context) error {
 	log.Print("DELETE :id  request initialization")
 
-	idParam := c.Param("id")
-	id, err := strconv.Atoi(idParam)
+	id, err := tools.ValidateRequest(c)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be an integer"})
-	}
-
-	if id <= 0 {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "ID must be a positive integer"})
+		return err
 	}
 
 	err = h.Service.Delete(id)
