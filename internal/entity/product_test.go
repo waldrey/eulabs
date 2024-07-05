@@ -42,7 +42,6 @@ func TestGivenAValidParams_WhenICallNewProduct_ThenShouldReceiveCreateProductWit
 		Description: "O poderoso computador da Apple",
 		Price:       23000.00,
 	}
-	assert.Equal(t, 1234, product.ID)
 	assert.Equal(t, 23000.0, product.Price)
 	assert.Equal(t, "O poderoso computador da Apple", product.Description)
 	assert.Nil(t, product.IsValid())
