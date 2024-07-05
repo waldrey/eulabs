@@ -22,12 +22,7 @@ import (
 
 // @title           Eulabs Products API
 // @version         1.0
-// @description     This is a sample server celler server.
-// @termsOfService  http://swagger.io/terms/
-
-// @contact.name   Waldrey Souza Silva
-// @contact.url    http://waldrey.com/
-// @contact.email  waldrey22@gmail.com
+// @description     API de Produtos
 
 // @host      localhost:8080
 // @BasePath  /api/v1
