@@ -6,7 +6,7 @@ define ASCII_ART
 
   \___|\__,_|_|\__,_|_.__/|___/   
 
-   simple makefile | run `make install` to execute application locally
+	run `make install` to execute application locally
 
 endef
 export ASCII_ART
