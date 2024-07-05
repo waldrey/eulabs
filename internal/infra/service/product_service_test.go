@@ -139,16 +139,16 @@ func TestGivenAValidParams_WhenICallUpdateProductService_ThenShouldReceiveSucces
 func TestGivenAValidParams_WhenICallFindAllProductService_ThenShouldReceiveSuccess(t *testing.T) {
 	repository := &mock.ProductRepositoryMock{}
 	repository.On("FindAll").Return([]entity.Product{
-		{Id: 1, Name: "Macbook Pro", Description: "Description", Price: 100.0},
-		{Id: 2, Name: "iPhone 15 Pro Max", Description: "Description", Price: 50.60},
-		{Id: 2, Name: "Livro Domain-Driven Design", Description: "Description", Price: 1599.99},
+		{Name: "Macbook Pro", Description: "Description", Price: 100.0},
+		{Name: "iPhone 15 Pro Max", Description: "Description", Price: 50.60},
+		{Name: "Livro Domain-Driven Design", Description: "Description", Price: 1599.99},
 	}, nil)
 	service := ProductService(repository)
 
 	expectedProducts := []entity.Product{
-		{Id: 1, Name: "Macbook Pro", Description: "Description", Price: 100.0},
-		{Id: 2, Name: "iPhone 15 Pro Max", Description: "Description", Price: 50.60},
-		{Id: 2, Name: "Livro Domain-Driven Design", Description: "Description", Price: 1599.99},
+		{Name: "Macbook Pro", Description: "Description", Price: 100.0},
+		{Name: "iPhone 15 Pro Max", Description: "Description", Price: 50.60},
+		{Name: "Livro Domain-Driven Design", Description: "Description", Price: 1599.99},
 	}
 
 	products, err := service.FindAll()
